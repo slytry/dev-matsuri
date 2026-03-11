@@ -3,7 +3,14 @@ import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 import { fileURLToPath, URL } from "node:url";
 
+const isGithubActions = process.env.GITHUB_ACTIONS === "true";
+const repository = process.env.GITHUB_REPOSITORY ?? "";
+const repoName = repository.split("/")[1] ?? "";
+const isUserOrOrgPages = repoName.endsWith(".github.io");
+const base = isGithubActions ? (isUserOrOrgPages ? "/" : `/${repoName}/`) : "/";
+
 export default defineConfig({
+  base,
   plugins: [
     react(),
     VitePWA({
@@ -16,16 +23,17 @@ export default defineConfig({
         theme_color: "#d15031",
         background_color: "#f9f0e4",
         display: "standalone",
-        start_url: "/",
+        start_url: base,
+        scope: base,
         icons: [
           {
-            src: "/pwa-192.svg",
+            src: "pwa-192.svg",
             sizes: "192x192",
             type: "image/svg+xml",
             purpose: "any"
           },
           {
-            src: "/pwa-512.svg",
+            src: "pwa-512.svg",
             sizes: "512x512",
             type: "image/svg+xml",
             purpose: "any maskable"

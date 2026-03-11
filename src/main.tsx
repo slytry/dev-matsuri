@@ -9,9 +9,11 @@ registerSW({
   immediate: true
 });
 
+const routerBase = import.meta.env.BASE_URL;
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={routerBase}>
       <App />
     </BrowserRouter>
   </React.StrictMode>
