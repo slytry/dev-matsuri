@@ -1,0 +1,1 @@
+{"root":["./src/main.tsx","./src/vite-env.d.ts","./src/app/app.tsx","./src/app/appshell.tsx","./src/core/tools/registry.ts","./src/core/tools/types.ts","./src/tools/timestamp/timestamptool.tsx","./src/tools/timestamp/timestamp.test.ts","./src/tools/timestamp/timestamp.ts"],"version":"5.9.3"}
