@@ -1,7 +1,8 @@
-import { type FormEventHandler, useMemo, useState } from "react";
+import { type FormEventHandler, useEffect, useMemo, useState } from "react";
 import {
   buildDefaultRange,
   buildRange,
+  dateFromUnixInput,
   estimatePoints,
   formatLocalDate,
   MAX_POINTS,
@@ -40,6 +41,8 @@ export function TimestampTool() {
   const [start, setStart] = useState(defaults.start);
   const [end, setEnd] = useState(defaults.end);
   const [stepSeconds, setStepSeconds] = useState(60);
+  const [startUnixInput, setStartUnixInput] = useState("");
+  const [endUnixInput, setEndUnixInput] = useState("");
   const [message, setMessage] = useState("Ready. Timestamps are Unix seconds (UTC).");
 
   const validation = useMemo(() => validateRange(start, end, stepSeconds), [start, end, stepSeconds]);
@@ -52,6 +55,36 @@ export function TimestampTool() {
     return buildRange(validation.startTs, validation.endTs, stepSeconds);
   }, [validation, stepSeconds]);
 
+  useEffect(() => {
+    const startTs = unixFromInput(start);
+    if (startTs !== null) {
+      setStartUnixInput(String(startTs));
+    }
+  }, [start]);
+
+  useEffect(() => {
+    const endTs = unixFromInput(end);
+    if (endTs !== null) {
+      setEndUnixInput(String(endTs));
+    }
+  }, [end]);
+
+  const onStartUnixChange = (value: string) => {
+    setStartUnixInput(value);
+    const converted = dateFromUnixInput(value);
+    if (converted !== null) {
+      setStart(converted);
+    }
+  };
+
+  const onEndUnixChange = (value: string) => {
+    setEndUnixInput(value);
+    const converted = dateFromUnixInput(value);
+    if (converted !== null) {
+      setEnd(converted);
+    }
+  };
+
   const onSubmit: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
     if ("error" in validation) {
@@ -62,8 +95,8 @@ export function TimestampTool() {
     setMessage("Done. Values are ready for scripts and logs.");
   };
 
-  const startTs = "error" in validation ? "-" : String(validation.startTs);
-  const endTs = "error" in validation ? "-" : String(validation.endTs);
+  const startTs = startUnixInput;
+  const endTs = endUnixInput;
   const pointsCount = "error" in validation ? "0" : String(validation.points);
 
   return (
@@ -101,11 +134,21 @@ export function TimestampTool() {
       <div className="summary-grid">
         <p>
           <span>Start Unix</span>
-          <strong>{startTs}</strong>
+          <input
+            type="text"
+            inputMode="numeric"
+            value={startTs}
+            onChange={(event) => onStartUnixChange(event.target.value)}
+          />
         </p>
         <p>
           <span>End Unix</span>
-          <strong>{endTs}</strong>
+          <input
+            type="text"
+            inputMode="numeric"
+            value={endTs}
+            onChange={(event) => onEndUnixChange(event.target.value)}
+          />
         </p>
         <p>
           <span>Points</span>

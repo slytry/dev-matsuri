@@ -36,6 +36,25 @@ export function unixFromInput(value: string): number | null {
   return Math.floor(millis / 1000);
 }
 
+export function dateFromUnixInput(value: string): string | null {
+  const trimmed = value.trim();
+  if (!/^-?\d+$/.test(trimmed)) {
+    return null;
+  }
+
+  const unixSeconds = Number(trimmed);
+  if (!Number.isSafeInteger(unixSeconds)) {
+    return null;
+  }
+
+  const date = new Date(unixSeconds * 1000);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  return toLocalInputValue(date);
+}
+
 export function estimatePoints(startTs: number, endTs: number, stepSeconds: number): number {
   return Math.floor((endTs - startTs) / stepSeconds) + 1;
 }
